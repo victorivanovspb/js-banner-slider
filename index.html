@@ -17,6 +17,19 @@
   .adaptive .for-umi-slider .container {
     width: 100% !important;
   }
+  #cnt-text {
+    position: absolute;
+    bottom: 0;
+    z-index: 100;
+    opacity: 1;
+    width:  100%;
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    color: white;
+    text-shadow: 0 0 6px #000;
+    font-size: 1.3em;
+  }
 </style>
 <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -33,11 +46,11 @@
 
 <div id="content-src">
   <div id="content">
-      <img class="img_link" data-link="#link-1" src="./img/r01-black.svg">
-      <img class="img_link" data-link="#link-2" src="./img/r02-red.svg">
-      <img class="img_link" data-link="#link-3" src="./img/r03-green.svg">
-      <img class="img_link" data-link="#link-4" src="./img/r04-blue.svg">
-      <img class="img_link" data-link="#link-5" src="./img/r05-yellow.svg">
+      <img class="img_link" data-link="#link-1" data-text="Message #1" src="./img/r01-black.svg">
+      <img class="img_link" data-link="#link-2" data-text="Message #2" src="./img/r02-red.svg">
+      <img class="img_link" data-link="#link-3" data-text="Message #3" src="./img/r03-green.svg">
+      <img class="img_link" data-link="#link-4" data-text="Message #4" src="./img/r04-blue.svg">
+      <img class="img_link" data-link="#link-5" data-text="Message #5" src="./img/r05-yellow.svg">
     
       <div id="cnt-text">123</div>
   </div>
@@ -91,6 +104,9 @@ $( document ).ready( function() {
           window.location
             .replace($(this).data('link'));
       });
+
+      // Print first message into text field
+      $('#cnt-text').text($('.img_link').first().data('text'));
    });
 });
 
@@ -129,10 +145,15 @@ $( document ).ready( function() {
 		};
 		_this.RS_Stop=function(){clearInterval(_int); _int=null;}
 		_this.RS_ShowPhoto=function(next){
+
+            $('#cnt-text').text(''); // clear text field
+            
             $('.current',$('.tgtimg',_this)).fadeOut(settings.effectTransition);
 			next.fadeIn(settings.effectTransition,function(){
 				$('.current',$('.tgtimg',_this)).removeClass('current');
 				$(this).addClass('current');
+
+                $('#cnt-text').text($(this).data('text')); // add next message into text field
               
 				var std=settings.pagination[0].dotStyleDisable;
 				if(std!=''){
