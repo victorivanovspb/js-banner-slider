@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>jQuery responsiveSlides Plugin Demo</title>
+<style>
+  #content-src {
+    display: none;
+  }
+  #content {
+    width: 100%;
+    height: 450px;
+    position: relative;
+    background: #99FF33;
+    cursor: pointer;
+  }
+  .adaptive .for-umi-slider .container {
+    width: 100% !important;
+  }
+</style>
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!--<script type="text/javascript" src="jquery.onImagesLoad.min.js"></script>
+<script type="text/javascript" src="jquery.responsiveSlides.js"></script>-->
+</head>
+<body>
+
+<div class="row-fluid for-umi-slider">
+  <div class="span12 pos-rel">
+    <div class="container">123</div>
+  </div>
+</div>
+
+<div id="content-src">
+  <div id="content">
+      <img class="img_link" data-link="#link-1" src="./img/r01-black.svg">
+      <img class="img_link" data-link="#link-2" src="./img/r02-red.svg">
+      <img class="img_link" data-link="#link-3" src="./img/r03-green.svg">
+      <img class="img_link" data-link="#link-4" src="./img/r04-blue.svg">
+      <img class="img_link" data-link="#link-5" src="./img/r05-yellow.svg">
+    
+      <div id="cnt-text">123</div>
+  </div>
+</div>
+
+<script language="javascript">
+
+$(".row-fluid.for-umi-slider")
+  .find(".container")
+  .text("");
+  
+$( document ).ready( function() {
+  
+  var data = "<div id='content'>" + $("#content").html() + "</div>";
+  $(".row-fluid.for-umi-slider")
+    .find(".container")
+    .html(data);
+    
+  $(function(){
+      var p=$('#content').responsiveSlides({
+          height:450,						// slides conteiner height
+          background:'#EEE',				// background color and color of overlayer to fadeout on init
+          autoStart:true,					// boolean autostart
+          startDelay:0,					    // start whit delay
+          effectInterval:5000,			    // time to swap photo
+          effectTransition:1000,			// time effect
+          pagination:[
+              {
+                  active:true,			// activate pagination
+                  inner:true,				// pagination inside or aouside slides conteiner
+                  position:'T_C', 		/* 
+                                              pagination align:
+                                                T_L = top left
+                                                T_C = top center
+                                                T_R = top right
+
+                                                B_L = bottom left
+                                                B_C = bottom center
+                                                B_R = bottom right
+                                        */
+                  margin:10, 				// pagination margin
+                  dotStyle:'', 			    // dot pagination class style
+                  dotStyleHover:'', 		// dot pagination class hover style
+                  dotStyleDisable:''		// dot pagination class disable style
+              }
+          ]
+      });
+
+      //Handling click event and redirecting to the related link
+      $('.img_link').click(function(){
+          window.location
+            .replace($(this).data('link'));
+      });
+   });
+});
+
+  
+/**
+ * Copyright (c) 2014 Leonardo Pinori - leodudedev(at)gmail(dot)com | https://github.com/leodudedev
+ * Dual licensed under MIT and GPL.
+ * @author Leonardo Pinori
+ * @version 1.2.0 
+ */
+(function($){
+	$.fn.responsiveSlides = function(options){
+		var _this=this;
+		var _int=null;
+		var im=' !important';
+        var settings = $.extend({
+			img:null,
+			height:$(_this).height(),
+			background:'#fff',
+			loadingClassStyle:'',
+			autoStart:true,
+			startDelay:0,
+			effectInterval:5000,
+			effectTransition:1000,
+			pagination:[{active:true, inner:true, position:'B_C', margin:10, dotStyle:'', dotStyleHover:'', dotStyleDisable:''}]
+		},options);
+		_this.RS_Start=function(){
+			_this.RS_Stop();
+			_int=setInterval(function(){
+				var n=$('.current',$('.tgtimg',_this)).next('img');
+				if(n.length==0){
+					n=$('img:first',$('.tgtimg',_this));
+				}
+				_this.RS_ShowPhoto(n);
+			},settings.effectInterval);
+		};
+		_this.RS_Stop=function(){clearInterval(_int); _int=null;}
+		_this.RS_ShowPhoto=function(next){
+            $('.current',$('.tgtimg',_this)).fadeOut(settings.effectTransition);
+			next.fadeIn(settings.effectTransition,function(){
+				$('.current',$('.tgtimg',_this)).removeClass('current');
+				$(this).addClass('current');
+              
+				var std=settings.pagination[0].dotStyleDisable;
+				if(std!=''){
+					$('.'+std,$('.pagination',_this)).removeClass(std);
+					$('div:eq('+$(this).index()+')',$('.pagination',_this)).addClass(std);
+				}else{
+					$('div',$('.pagination',_this)).css('opacity',1);
+					$('div:eq('+$(this).index()+')',$('.pagination',_this)).css('opacity',0.5);
+				}
+				if(_int==null&&settings.autoStart){_this.RS_Start();}
+			});
+		};
+		//var overstyle='position:absolute'+im+'; height:100%'+im+'; width:100%'+im+'; text-align:center'+im+'; line-height:'+settings.height+'px'+im+'; z-index:2'+im+'; background:'+settings.background+im+';';
+		var overstyle='position:absolute; height:100%; width:100%; text-align:center; line-height:'+settings.height+'px; z-index:2; background-color:'+settings.background+';';
+		if(settings.loadingClassStyle==''){
+			overstyle+='font-family:Arial'+im+'; ';
+			if(settings.background.toLowerCase()=='#fff'||settings.background.toLowerCase()=='#ffffff'){
+				overstyle+='color:#000'+im+';';
+			}else{
+				overstyle+='color:#fff'+im+';';
+			}
+		}
+		var tgtstyle='position:absolute'+im+'; height:'+settings.height+'px'+im+'; width:100%'+im+'; background:'+settings.background+im+'; z-index:0'+im+'; overflow:hidden'+im;
+		$(_this).height(settings.height).prepend('<div class="overslide '+settings.loadingClassStyle+'" style="'+overstyle+'">loading..</div><div class="tgtimg" style="'+tgtstyle+'"></div>');
+
+ 		if(settings.img==null || settings.img==undefined || settings.img=='undefined'){
+			$('img',_this).appendTo($('.tgtimg',_this));
+			$('img',$('.tgtimg',_this)).each(function(i,e){
+				$(this).attr('style','position:absolute; z-index:0; top:0px; left:0px; height:'+settings.height+'px; display:'+((i==0)?'block':'none'))
+				if(i==0){
+					$(this).addClass('current');
+				}
+            });
+		}else{
+			$.each(settings.img,function(i,e){
+				$('.tgtimg',_this).append('<img src="'+e+'" style="position:absolute; z-index:0; top:0px; left:0px; height:'+settings.height+'px; display:'+((i==0)?'block':'none')+'" class="'+((i==0)?'current':'')+'">');
+			});
+		}
+		$('img',$('.tgtimg',_this)).onImagesLoad(function(){
+			// every images are loaded. can i init
+			$(window).resize(function(){
+              console.log('on images load');
+				$('img',$('.tgtimg',_this)).each(function(i,e){
+					var l=-(($(e).width()-$(_this).width())/2);
+					if($(_this).width()>$(e).width()){
+						l=($(_this).width()-$(e).width())/2;
+					}
+					$(e).css('left',l+'px');
+				});
+			}).trigger('resize');
+			var p=settings.pagination[0];
+			if(p.active){
+				var pos=(p.position.substring(0,1)=='T')?'top:'+p.margin+'px; ':'bottom:'+p.margin+'px; ';
+				pos+=(p.position.substring(2,3)=='L')?'left:'+p.margin+'px; ':(p.position.substring(2,3)=='R')?'right:'+p.margin+'px; ':'left:50%; ';
+				var elm='';
+				
+				$('img',$('.tgtimg',_this)).each(function(i,e){elm+='<div'+((p.dotStyle=='')?' style="float:left; height:15px; width:15px; background:#fff; margin-left:2px; cursor:pointer"':' class="'+p.dotStyle+'"')+'></div>';});
+				$(_this).append('<div class="pagination" style="position:absolute; z-index:10; '+pos+'">'+elm+'</div>');
+				if(p.position.substring(2,3)=='C'){
+					$('.pagination',_this).css('margin-left','-'+parseInt($('.pagination',_this).width()/2)+'px');
+				}else if(p.position.substring(2,3)=='R'){
+					$('.pagination',_this).css('margin-left','-'+($('.pagination',_this).width()+p.margin)+'px');
+				}
+				if(!p.inner){
+					$('.pagination',_this).css('margin-top',-$('.pagination',_this).height()-(p.margin*2)+'px');
+					$('.pagination',_this).css('margin-bottom',-$('.pagination',_this).height()-(p.margin*2)+'px');
+				}
+				$('div',$('.pagination',_this)).mouseover(function(){
+					if(p.dotStyleHover!=''){$(this).addClass(p.dotStyleHover);}else{$(this).css('background','#CCC');}
+				}).mouseout(function(){
+					if(p.dotStyleHover!=''){$(this).removeClass(p.dotStyleHover);}else{$(this).css('background','#fff');}
+				}).click(function(){
+					_this.RS_Stop();
+					_this.RS_ShowPhoto($('img:eq('+$(this).index()+')',$('.tgtimg',_this)));
+				});
+			}
+			// init transition after delay and remove overlayer whit custom bg color
+			$('.overslide',_this).delay(settings.startDelay).fadeOut(settings.effectTransition,function(){
+				if(settings.autoStart){_this.RS_Start();}
+				$('div:eq(0)',$('.pagination',_this)).css('opacity',0.5);
+			});
+		});
+		return _this;
+    };
+ 
+}(jQuery));
+ 
+  
+/**
+ * jQuery 'onImagesLoaded' plugin v1.2.2 (Updated May 13, 2013)
+ * Fires callback functions when images have loaded within a particular selector.
+ *
+ * Copyright (c) Cirkuit Networks, Inc. (http://www.cirkuit.net), 2008-2013.
+ * Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
+ *
+ * For documentation and usage, visit "http://www.cirkuit.net/projects/jquery/onImagesLoad/"
+ */
+(function(c){c.fn.onImagesLoad=function(b){"function"==typeof b&&(b={all:b});var a=this;a.opts=c.extend({},c.fn.onImagesLoad.defaults,b);a.opts.selectorCallback&&!a.opts.all&&(a.opts.all=a.opts.selectorCallback);a.opts.itemCallback&&!a.opts.each&&(a.opts.each=a.opts.itemCallback);b=!c.support.appendChecked;var f=!b&&!c.support.input,j=!b&&!f&&!c.support.clearCloneStyle&&!c.support.cors,h=b||f||j;a.bindEvents=function(e,b,g){if(0===e.length)a.opts.callbackIfNoImagesExist&&g&&g(b);else{var d=[];e.jquery||
+(e=c(e));e.each(function(a){var f=this.src;h||(this.src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==");c(this).bind("load",function(){0>jQuery.inArray(a,d)&&(d.push(a),d.length==e.length&&g&&g.call(b,b))});if(h){if(this.complete||void 0===this.complete)this.src=f}else this.src=f})}};var d=[];a.each(function(){if(a.opts.each){var b;b="IMG"==this.tagName?this:c("img",this);a.bindEvents(b,this,a.opts.each)}a.opts.all&&("IMG"==this.tagName?d.push(this):c("img",this).each(function(){d.push(this)}))});
+a.opts.all&&a.bindEvents(d,this,a.opts.all);return a.each(function(){})};c.fn.onImagesLoad.defaults={all:null,each:null,callbackIfNoImagesExist:!1}})(jQuery);
+  
+</script>
+
+  
+  </body>
+</html>
